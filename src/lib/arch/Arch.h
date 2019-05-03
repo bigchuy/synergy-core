@@ -44,6 +44,11 @@
 #    include "arch/win32/ArchLogWindows.h"
 #    include "arch/win32/ArchMiscWindows.h"
 #    include "arch/win32/ArchMultithreadWindows.h"
+#   if BLUETOOTH
+#       include "ArchBluetoothNetWin.h"
+#   elif BLUETOOTH
+#	    include "ArchNetworkWinsock.h"
+#   endif
 #    include "arch/win32/ArchNetworkWinsock.h"
 #    include "arch/win32/ArchSleepWindows.h"
 #    include "arch/win32/ArchStringWindows.h"
@@ -58,7 +63,11 @@
 #    if HAVE_PTHREAD
 #        include "arch/unix/ArchMultithreadPosix.h"
 #    endif
-#    include "arch/unix/ArchNetworkBSD.h"
+#    if BLUETOOTH
+#       include "arch/unix/ArchNetworkBluetooth.h"
+#    elif BLUETOOTH
+#       include "arch/unix/ArchNetworkBSD.h"
+#   endif
 #    include "arch/unix/ArchSleepUnix.h"
 #    include "arch/unix/ArchStringUnix.h"
 #    include "arch/unix/ArchSystemUnix.h"

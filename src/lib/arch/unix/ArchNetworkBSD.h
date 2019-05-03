@@ -37,7 +37,9 @@ typedef int socklen_t;
 // compatible so we always use it.
 typedef char optval_t;
 
+#ifndef BLUETOOTH
 #define ARCH_NETWORK ArchNetworkBSD
+#endif
 #define TYPED_ADDR(type_, addr_) (reinterpret_cast<type_*>(&addr_->m_addr))
 
 class ArchSocketImpl {
@@ -92,14 +94,15 @@ public:
     virtual int                getAddrPort(ArchNetAddress);
     virtual bool            isAnyAddr(ArchNetAddress);
     virtual bool            isEqualAddr(ArchNetAddress, ArchNetAddress);
+    virtual void            setHostLookup(std::map<std::string,std::string> configMap);
 
-private:
+protected:
     const int*            getUnblockPipe();
     const int*            getUnblockPipeForThread(ArchThread);
     void                setBlockingOnSocket(int fd, bool blocking);
     void                throwError(int);
     void                throwNameError(int);
 
-private:
+protected:
     ArchMutex            m_mutex{};
 };

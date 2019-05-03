@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+SET(BLUETOOTH 1)
+
 cmake_minimum_required (VERSION 3.4)
 project (synergy-core C CXX)
 
@@ -73,7 +75,7 @@ include_directories (BEFORE SYSTEM ./ext/gtest/include)
 
 if (UNIX)
     if (NOT APPLE)
-        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -fpermissive")
     endif()
 
     # For config.h, detect the libraries, functions, etc.
@@ -245,6 +247,10 @@ if (UNIX)
             list (APPEND libs Xi)
         endif()
 
+        IF(BLUETOOTH)
+            LIST(APPEND libs bluetooth)
+        ENDIF(BLUETOOTH)
+
     endif()
 
     # For config.h, set some static values; it may be a good idea to make
@@ -266,7 +272,7 @@ if (UNIX)
     # For config.h, save the results based on a template (config.h.in).
     configure_file (res/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/src/lib/config.h)
 
-    add_definitions (-DSYSAPI_UNIX=1 -DHAVE_CONFIG_H)
+    add_definitions (-DSYSAPI_UNIX=1 -DHAVE_CONFIG_H -DBLUETOOTH)
 
     if (APPLE)
         add_definitions (-DWINAPI_CARBON=1 -D_THREAD_SAFE)
@@ -278,13 +284,14 @@ elseif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /D _BIND_TO_CURRENT_VCLIBS_VERSION=1")
     set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD /O2 /Ob2")
 
-    list (APPEND libs Wtsapi32 Userenv Wininet comsuppw Shlwapi)
+    list (APPEND libs Wtsapi32 Userenv Wininet comsuppw Shlwapi Ws2_32)
 
     add_definitions (
         /DWIN32
         /D_WINDOWS
         /D_CRT_SECURE_NO_WARNINGS
         /DSYNERGY_VERSION=\"${SYNERGY_VERSION}\"
+        /DBLUETOOTH
         /D_XKEYCHECK_H
     )
 endif()

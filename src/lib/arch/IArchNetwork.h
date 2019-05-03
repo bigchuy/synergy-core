@@ -20,6 +20,7 @@
 
 #include "common/IInterface.h"
 #include "common/stdstring.h"
+#include "common/stdmap.h"
 
 class ArchThreadImpl;
 typedef ArchThreadImpl* ArchThread;
@@ -65,6 +66,7 @@ public:
         kUNKNOWN,
         kINET,
         kINET6,
+        kBLUETOOTH
     };
 
     //! Supported socket types
@@ -276,6 +278,8 @@ public:
     returns an "any" address.
     */
     virtual bool            isAnyAddr(ArchNetAddress addr) = 0;
+
+    virtual void            setHostLookup(std::map<std::string,std::string> configMap) = 0;
 
     //@}
 

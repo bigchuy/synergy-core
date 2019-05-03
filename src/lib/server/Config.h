@@ -142,6 +142,7 @@ private:
     };
     typedef std::map<String, Cell, synergy::string::CaselessCmp> CellMap;
     typedef std::map<String, String, synergy::string::CaselessCmp> NameMap;
+    typedef std::map<String, String> BluetoothMap;
 
 public:
     typedef Cell::const_iterator link_const_iterator;
@@ -221,6 +222,8 @@ public:
     */
     bool                addAlias(const String& canonical,
                             const String& alias);
+    bool                addBluetoothAddress(const String& host, const String& btAddress);
+    bool                isValidBluetoothAddress(const String& name) const;
 
     //! Remove alias
     /*!
@@ -450,12 +453,15 @@ public:
 
     //@}
 
+    BluetoothMap getBluetoothLookup();
+
 private:
     void                readSection(ConfigReadContext&);
     void                readSectionOptions(ConfigReadContext&);
     void                readSectionScreens(ConfigReadContext&);
     void                readSectionLinks(ConfigReadContext&);
     void                readSectionAliases(ConfigReadContext&);
+    void                readSectionBluetooth(ConfigReadContext&);
 
     InputFilter::Condition*
                         parseCondition(ConfigReadContext&,
@@ -474,6 +480,7 @@ private:
 private:
     CellMap                m_map;
     NameMap                m_nameToCanonicalName;
+    BluetoothMap           m_hostToBluetoothAddress;
     NetworkAddress        m_synergyAddress;
     ScreenOptions        m_globalOptions;
     InputFilter            m_inputFilter;

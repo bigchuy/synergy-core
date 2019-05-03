@@ -700,6 +700,10 @@ ServerApp::mainLoop()
         LOG((CLOG_CRIT "unknown screen name `%s'", args().m_name.c_str()));
         return kExitFailed;
     }
+#if BLUETOOTH
+    std::map<std::string, std::string> configMap = args().m_config->getBluetoothLookup();
+    ARCH->setHostLookup(configMap);
+#endif
 
     // start server, etc
     appUtil().startNode();

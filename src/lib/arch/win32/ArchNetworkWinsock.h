@@ -94,8 +94,9 @@ public:
     virtual int                getAddrPort(ArchNetAddress);
     virtual bool            isAnyAddr(ArchNetAddress);
     virtual bool            isEqualAddr(ArchNetAddress, ArchNetAddress);
+    virtual void            setHostLookup(std::map<std::string,std::string> configMap);
 
-private:
+protected:
     void                initModule(HMODULE);
 
     void                setBlockingOnSocket(SOCKET, bool blocking);
@@ -103,7 +104,7 @@ private:
     void                throwError(int);
     void                throwNameError(int);
 
-private:
+protected:
     typedef std::list<WSAEVENT> EventList;
 
     ArchMutex            m_mutex;

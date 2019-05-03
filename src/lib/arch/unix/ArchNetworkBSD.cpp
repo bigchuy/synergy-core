@@ -1001,3 +1001,7 @@ ArchNetworkBSD::throwNameError(int err)
         throw XArchNetworkName(s_msg[4]);
     }
 }
+
+void ArchNetworkBSD::setHostLookup(std::map<std::string,std::string> configMap) {
+    // Do Nothing
+}

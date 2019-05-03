@@ -983,3 +983,7 @@ ArchNetworkWinsock::throwNameError(int err)
         throw XArchNetworkName(new XArchEvalWinsock(err));
     }
 }
+
+void ArchNetworkWinsock::setHostLookup(std::map<std::string,std::string> configMap) {
+        // Do Nothing
+}

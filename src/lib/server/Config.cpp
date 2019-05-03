@@ -17,7 +17,7 @@
  */
 
 #include "server/Config.h"
-
+#include "base/Log.h"
 #include "base/IEventQueue.h"
 #include "common/stdistream.h"
 #include "common/stdostream.h"
@@ -165,6 +165,26 @@ Config::addAlias(const String& canonical, const String& alias)
 	m_nameToCanonicalName.insert(std::make_pair(alias, canonical));
 
 	return true;
+}
+
+bool
+Config::addBluetoothAddress(const String& host, const String& bluetoothAddress)
+{
+    LOG((CLOG_INFO "Adding Bluetooth lookup : %s = %s", host.c_str(), bluetoothAddress.c_str()));
+    // alias name must not exist
+    if (m_hostToBluetoothAddress.find(host) != m_hostToBluetoothAddress.end()) {
+        return false;
+    }
+
+    // insert alias
+    m_hostToBluetoothAddress.insert(std::make_pair(host, bluetoothAddress));
+
+    return true;
+}
+
+std::map<String, String>
+Config::getBluetoothLookup() {
+    return m_hostToBluetoothAddress;
 }
 
 bool
@@ -410,6 +430,14 @@ Config::isValidScreenName(const String& name) const
 	return true;
 }
 
+bool
+Config::isValidBluetoothAddress(const String& name) const
+{
+    // Name is valid if it is a Bluetooth MAC Address 00:00:00:00:00:00
+    // TODO: actually implement isValidBluetoothAddress
+    return true;
+}
+
 Config::const_iterator
 Config::begin() const
 {
@@ -653,6 +681,7 @@ Config::readSection(ConfigReadContext& s)
 	static const char s_screens[] = "screens";
 	static const char s_links[]   = "links";
 	static const char s_aliases[] = "aliases";
+    static const char s_bluetooth[] = "bluetooth";
 
 	String line;
 	if (!s.readLine(line)) {
@@ -689,6 +718,9 @@ Config::readSection(ConfigReadContext& s)
 	else if (name == s_aliases) {
 		readSectionAliases(s);
 	}
+    else if (name == s_bluetooth) {
+        readSectionBluetooth(s);
+    }
 	else {
 		throw XConfigRead(s, "unknown section name \"%{1}\"", name);
 	}
@@ -1047,6 +1079,48 @@ Config::readSectionAliases(ConfigReadContext& s)
 	throw XConfigRead(s, "unexpected end of aliases section");
 }
 
+void
+Config::readSectionBluetooth(ConfigReadContext& s)
+{
+    LOG((CLOG_INFO "Parsing Bluetooth Section"));
+    String line;
+    String host;
+    String btAddress;
+    while (s.readLine(line)) {
+        // check for end of section
+        if (line == "end") {
+            LOG((CLOG_INFO "Done reading Bluetooth Section"));
+            return;
+        }
+
+        LOG((CLOG_INFO "Bluetooth line : %s", line.c_str()));
+
+        String::size_type i = 0;
+        String host, btAddress;
+        ConfigReadContext::ArgList nameArgs, valueArgs;
+        s.parseNameWithArgs("name", line, "=", i, host, nameArgs);
+        ++i;
+        s.parseNameWithArgs("value", line, ",;\n", i, btAddress, valueArgs);
+
+        LOG((CLOG_INFO "Host : %s, BT Address : %s", host.c_str(), btAddress.c_str()));
+
+        // verify we know about the screen
+        if (!isScreen(host)) {
+            throw XConfigRead(s, "unknown screen name \"%{1}\"", host);
+        }
+
+        // verify validity of screen name
+        if (!isValidBluetoothAddress(line)) {
+            throw XConfigRead(s, "invalid bluetooth address \"%{1}\"", line);
+        }
+
+        // add alias
+        if (!addBluetoothAddress(host, line)) {
+            throw XConfigRead(s, "alias \"%{1}\" is already used", line);
+        }
+    }
+    throw XConfigRead(s, "unexpected end of aliases section");
+}
 
 InputFilter::Condition*
 Config::parseCondition(ConfigReadContext& s,
