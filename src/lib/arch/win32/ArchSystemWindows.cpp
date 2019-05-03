@@ -23,7 +23,7 @@
 #include "tchar.h"
 #include <string>
 
-#include <windows.h>
+#include <Windows.h>
 #include <psapi.h>
 
 static const char* s_settingsKeyNames[] = {
@@ -141,7 +141,7 @@ ArchSystemWindows::getLibsUsed(void) const
 
     DWORD pid = GetCurrentProcessId();
 
-    std::string msg = "pid:" + std::to_string((_ULonglong)pid) + "\n";
+    std::string msg = "pid:" + std::to_string((unsigned long long)pid) + "\n";
 
     hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
 

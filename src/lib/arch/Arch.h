@@ -45,7 +45,7 @@
 #    include "arch/win32/ArchMiscWindows.h"
 #    include "arch/win32/ArchMultithreadWindows.h"
 #   if BLUETOOTH
-#       include "ArchBluetoothNetWin.h"
+#       include "arch/win32/ArchBluetoothNetWin.h"
 #   elif BLUETOOTH
 #	    include "ArchNetworkWinsock.h"
 #   endif
